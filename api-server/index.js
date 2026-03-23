@@ -1,17 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const { default: NeteaseCloudMusicApi } = require('NeteaseCloudMusicApi');
+const NeteaseCloudMusicApi = require('NeteaseCloudMusicApi');
 
 const app = express();
 const PORT = 3000;
 
 // 启用 CORS
 app.use(cors());
-
-// 初始化网易云音乐 API（如果需要使用代理，可以在这里配置）
-const neteaseApi = new NeteaseCloudMusicApi({
-    cookie: '', // 如果需要登录后访问的功能，可以在这里设置 cookie
-});
 
 /**
  * 一站式搜索并获取歌词
@@ -30,8 +25,8 @@ app.get('/search-and-lyric', async (req, res) => {
     try {
         console.log(`[${new Date().toLocaleTimeString()}] 搜索: ${keywords} - ${artist || ''}`);
 
-        // 1. 搜索歌曲
-        const searchResult = await neteaseApi.searchSong({
+        // 1. 搜索歌曲（使用 cloudsearch 更准确）
+        const searchResult = await NeteaseCloudMusicApi.cloudsearch({
             keywords: keywords,
             limit: 10
         });
@@ -61,7 +56,7 @@ app.get('/search-and-lyric', async (req, res) => {
         console.log(`  → 找到歌曲: ${selectedSong.name} - ${selectedSong.ar?.map(a => a.name).join('/')}`);
 
         // 3. 获取歌词
-        const lyricResult = await neteaseApi.songLyric({
+        const lyricResult = await NeteaseCloudMusicApi.lyric({
             id: selectedSong.id
         });
 
