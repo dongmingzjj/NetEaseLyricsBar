@@ -24,7 +24,7 @@
     <Content Include="Fonts\*.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="trayicon.jpg" />
+    <Resource Include="1.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -705,28 +705,37 @@ namespace NetEaseLyricsBar
         {
             try
             {
-                // 从资源流加载图标
+                // 从资源流加载图标文件
                 var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                var stream = assembly.GetManifestResourceStream("NetEaseLyricsBar.trayicon.jpg");
+                var stream = assembly.GetManifestResourceStream("NetEaseLyricsBar.1.ico");
 
                 if (stream != null)
                 {
-                    // 将 JPEG 转换为 Bitmap
-                    var bitmap = new System.Drawing.Bitmap(stream);
-
-                    // 从 Bitmap 创建 Icon（需要先保存为 .ico 格式或使用 HICON）
-                    // 简化方案：直接设置，使用系统默认图标
-                    NotifyIcon.Icon = System.Drawing.SystemIcons.Application;
+                    // 直接加载 ICO 文件
+                    var icon = new System.Drawing.Icon(stream);
+                    NotifyIcon.Icon = icon;
                     stream.Dispose();
-                    bitmap.Dispose();
-
-                    System.Diagnostics.Debug.WriteLine("[MainWindow] ✓ 使用系统默认图标");
+                    System.Diagnostics.Debug.WriteLine("[MainWindow] ✓ 托盘图标已加载: 1.ico");
                 }
                 else
                 {
-                    // 使用系统默认图标
-                    NotifyIcon.Icon = System.Drawing.SystemIcons.Application;
-                    System.Diagnostics.Debug.WriteLine("[MainWindow] ⚠ 图标文件未找到，使用系统默认图标");
+                    // 如果资源加载失败，尝试从文件系统加载
+                    var iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "1.ico");
+                    if (System.IO.File.Exists(iconPath))
+                    {
+                        using (var iconStream = System.IO.File.OpenRead(iconPath))
+                        {
+                            var icon = new System.Drawing.Icon(iconStream);
+                            NotifyIcon.Icon = icon;
+                            System.Diagnostics.Debug.WriteLine("[MainWindow] ✓ 托盘图标已加载（文件）: 1.ico");
+                        }
+                    }
+                    else
+                    {
+                        // 使用系统默认图标
+                        NotifyIcon.Icon = System.Drawing.SystemIcons.Application;
+                        System.Diagnostics.Debug.WriteLine("[MainWindow] ⚠ 图标文件未找到，使用系统默认图标");
+                    }
                 }
             }
             catch (Exception ex)
