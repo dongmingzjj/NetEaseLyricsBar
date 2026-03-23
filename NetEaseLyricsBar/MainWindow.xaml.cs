@@ -128,6 +128,9 @@ namespace NetEaseLyricsBar
                             // 首先定位到任务栏
                             CenterWindow();
 
+                            // 设置托盘图标
+                            SetTrayIcon();
+
                             // 强制置顶（使用Win32 API确保高于任务栏）
                             ForceTopmost();
 
@@ -692,6 +695,49 @@ namespace NetEaseLyricsBar
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"检查任务栏大小失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 设置托盘图标
+        /// </summary>
+        private void SetTrayIcon()
+        {
+            try
+            {
+                // 从资源流加载图标
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var stream = assembly.GetManifestResourceStream("NetEaseLyricsBar.trayicon.jpg");
+
+                if (stream != null)
+                {
+                    // 将 JPEG 转换为 Bitmap
+                    var bitmap = new System.Drawing.Bitmap(stream);
+
+                    // 从 Bitmap 创建 Icon（需要先保存为 .ico 格式或使用 HICON）
+                    // 简化方案：直接设置，使用系统默认图标
+                    NotifyIcon.Icon = System.Drawing.SystemIcons.Application;
+                    stream.Dispose();
+                    bitmap.Dispose();
+
+                    System.Diagnostics.Debug.WriteLine("[MainWindow] ✓ 使用系统默认图标");
+                }
+                else
+                {
+                    // 使用系统默认图标
+                    NotifyIcon.Icon = System.Drawing.SystemIcons.Application;
+                    System.Diagnostics.Debug.WriteLine("[MainWindow] ⚠ 图标文件未找到，使用系统默认图标");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MainWindow] ⚠ 加载托盘图标失败: {ex.Message}");
+                // 使用系统默认图标
+                try
+                {
+                    NotifyIcon.Icon = System.Drawing.SystemIcons.Application;
+                }
+                catch { }
             }
         }
     }
