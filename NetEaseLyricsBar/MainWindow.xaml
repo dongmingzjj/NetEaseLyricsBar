@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NetEaseLyricsBar"
+        xmlns:notify="clr-namespace:Hardcodet.Wpf.TaskbarNotification;assembly=Hardcodet.NotifyIcon.Wpf"
         mc:Ignorable="d"
         Title="网易云音乐歌词栏"
         Width="600" Height="40"
@@ -11,7 +12,7 @@
         AllowsTransparency="True"
         Background="Transparent"
         Topmost="True"
-        ShowInTaskbar="True"
+        ShowInTaskbar="False"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="Manual"
         FontFamily="Microsoft YaHei UI">
@@ -34,7 +35,27 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+    <DockPanel>
+        <!-- 系统托盘图标 -->
+        <notify:TaskbarIcon
+            x:Name="NotifyIcon"
+            ToolTipText="网易云音乐歌词栏"
+            Visibility="Visible"
+            TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick"
+            DockPanel.Dock="Top">
+            <!-- 右键菜单 -->
+            <notify:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="显示窗口" Click="ShowWindowMenuItem_Click"/>
+                    <MenuItem Header="隐藏窗口" Click="HideWindowMenuItem_Click"/>
+                    <Separator/>
+                    <MenuItem Header="退出" Click="ExitMenuItem_Click"/>
+                </ContextMenu>
+            </notify:TaskbarIcon.ContextMenu>
+        </notify:TaskbarIcon>
+
+        <!-- 主界面 -->
+        <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" DockPanel.Dock="Top">
         <!-- 歌词容器 - 更透明的毛玻璃效果 -->
         <Border x:Name="LyricsContainer"
                 Background="#B4000000"
@@ -92,5 +113,6 @@
                            HorizontalAlignment="Stretch"/>
             </Grid>
         </Border>
-    </Grid>
+        </Grid>
+    </DockPanel>
 </Window>

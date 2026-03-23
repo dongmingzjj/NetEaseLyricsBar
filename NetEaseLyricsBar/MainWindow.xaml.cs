@@ -17,6 +17,38 @@ using NetEaseLyricsBar.Services;
 
 namespace NetEaseLyricsBar
 {
+    /// <summary>
+    /// 简单的 ICommand 实现
+    /// </summary>
+    public class RelayCommand : ICommand
+    {
+        private readonly Action _execute;
+        private readonly Func<bool>? _canExecute;
+
+        public RelayCommand(Action execute, Func<bool>? canExecute = null)
+        {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
+        }
+
+        public event EventHandler? CanExecuteChanged;
+
+        public bool CanExecute(object? parameter)
+        {
+            return _canExecute == null || _canExecute();
+        }
+
+        public void Execute(object? parameter)
+        {
+            _execute();
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
     public partial class MainWindow : Window
     {
         // Win32 API for enhanced topmost
@@ -40,6 +72,20 @@ namespace NetEaseLyricsBar
         private System.Windows.Threading.DispatcherTimer? _colorCheckTimer;  // 背景颜色检测定时器
         private System.Windows.Threading.DispatcherTimer? _taskbarSizeCheckTimer;  // 任务栏大小检测定时器
 
+        // 托盘图标命令
+        private ICommand _showWindowCommand;
+        private ICommand _hideWindowCommand;
+
+        /// <summary>
+        /// 显示窗口命令
+        /// </summary>
+        public ICommand ShowWindowCommand => _showWindowCommand;
+
+        /// <summary>
+        /// 隐藏窗口命令
+        /// </summary>
+        public ICommand HideWindowCommand => _hideWindowCommand;
+
         public MainWindow()
         {
             try
@@ -47,6 +93,10 @@ namespace NetEaseLyricsBar
                 InitializeComponent();
                 _viewModel = new MainViewModel();
                 DataContext = _viewModel;
+
+                // 初始化托盘图标命令
+                _showWindowCommand = new RelayCommand(ShowWindow);
+                _hideWindowCommand = new RelayCommand(HideWindow);
 
                 // 添加未处理异常捕获
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -61,6 +111,9 @@ namespace NetEaseLyricsBar
 
                 // 监听窗口激活，确保置顶
                 Activated += (s, e) => ForceTopmost();
+
+                // 监听窗口关闭事件，关闭到托盘
+                Closing += MainWindow_Closing;
 
                 // 初始化任务栏大小检测定时器
                 InitializeTaskbarSizeCheckTimer();
@@ -506,6 +559,22 @@ namespace NetEaseLyricsBar
             }
         }
 
+        // 托盘图标事件处理
+        private void NotifyIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ShowWindow();
+        }
+
+        private void ShowWindowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ShowWindow();
+        }
+
+        private void HideWindowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            HideWindow();
+        }
+
         // 键盘快捷键
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -524,6 +593,27 @@ namespace NetEaseLyricsBar
             _colorCheckTimer?.Stop();
             _taskbarSizeCheckTimer?.Stop();
             base.OnClosed(e);
+        }
+
+        // 窗口关闭事件 - 关闭到托盘
+        private void MainWindow_Closing(object? sender, CancelEventArgs e)
+        {
+            e.Cancel = true; // 取消关闭
+            Hide(); // 隐藏到托盘
+        }
+
+        // 显示窗口（从托盘）
+        private void ShowWindow()
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            ForceTopmost();
+        }
+
+        // 隐藏窗口（到托盘）
+        private void HideWindow()
+        {
+            Hide();
         }
 
         // 强制置顶（使用Win32 API）
