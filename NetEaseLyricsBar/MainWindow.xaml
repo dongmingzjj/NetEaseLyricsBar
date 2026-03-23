@@ -39,6 +39,7 @@
         <!-- 系统托盘图标 -->
         <notify:TaskbarIcon
             x:Name="NotifyIcon"
+            IconSource="/NetEaseLyricsBar;component/trayicon.jpg"
             ToolTipText="网易云音乐歌词栏"
             Visibility="Visible"
             TrayMouseDoubleClick="NotifyIcon_TrayMouseDoubleClick"

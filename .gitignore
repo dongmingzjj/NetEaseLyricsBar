@@ -135,6 +135,9 @@ api-server/node_modules/
 DebugView/
 MapleMonoNormal-TTF/
 Fonts/*.ttf
+*.jpeg
+*.jpg
+!trayicon.jpg
 
 # Config files with sensitive data
 app_config.json

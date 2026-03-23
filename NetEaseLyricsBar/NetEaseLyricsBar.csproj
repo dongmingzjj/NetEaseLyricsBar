@@ -23,6 +23,7 @@
     <Content Include="Fonts\*.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="trayicon.jpg" />
   </ItemGroup>
 
   <ItemGroup>
