@@ -52,9 +52,6 @@ namespace NetEaseLyricsBar
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
                 Dispatcher.UnhandledException += OnDispatcherUnhandledException;
 
-                // 验证字体文件夹
-                ValidateFontsFolder();
-
                 // 加载窗口设置
                 LoadWindowSettings();
 
@@ -142,45 +139,6 @@ namespace NetEaseLyricsBar
                 File.AppendAllText(logPath, errorMsg);
             }
             catch { }
-        }
-
-        // 验证字体文件夹
-        private void ValidateFontsFolder()
-        {
-            try
-            {
-                var appDir = AppDomain.CurrentDomain.BaseDirectory;
-                var fontsPath = Path.Combine(appDir, "Fonts");
-
-                if (!Directory.Exists(fontsPath))
-                {
-                    System.Diagnostics.Debug.WriteLine($"警告: 字体文件夹不存在: {fontsPath}");
-                    MessageBox.Show(
-                        "字体文件夹未找到，将使用系统默认字体\n\n" +
-                        $"预期路径: {fontsPath}",
-                        "字体文件警告",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    return;
-                }
-
-                var fontFiles = Directory.GetFiles(fontsPath, "*.ttf");
-                System.Diagnostics.Debug.WriteLine($"找到 {fontFiles.Length} 个字体文件");
-
-                if (fontFiles.Length == 0)
-                {
-                    MessageBox.Show(
-                        "字体文件夹为空，将使用系统默认字体\n\n" +
-                        $"如需使用 Maple Mono 字体，请将字体文件复制到:\n{fontsPath}",
-                        "字体文件警告",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError("ValidateFontsFolder", ex);
-            }
         }
 
         // 初始化背景颜色检测定时器

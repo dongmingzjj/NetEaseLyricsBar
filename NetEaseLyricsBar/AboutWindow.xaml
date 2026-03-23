@@ -152,11 +152,7 @@
                                            FontSize="14"
                                            Foreground="{StaticResource Fluent.TextPrimary}"
                                            Margin="0,0,0,6"/>
-                                <TextBlock Text="• 三种歌词动画效果"
-                                           FontSize="14"
-                                           Foreground="{StaticResource Fluent.TextPrimary}"
-                                           Margin="0,0,0,6"/>
-                                <TextBlock Text="• Maple Mono 字体（16种字重/斜体）"
+                                <TextBlock Text="• 简洁的界面设计"
                                            FontSize="14"
                                            Foreground="{StaticResource Fluent.TextPrimary}"
                                            Margin="0,0,0,6"/>
@@ -190,30 +186,6 @@
 
                             <!-- 快捷键列表 -->
                             <StackPanel>
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0"
-                                            Background="#F3F3F3"
-                                            BorderBrush="#E5E5E5"
-                                            BorderThickness="1"
-                                            Padding="10,6"
-                                            CornerRadius="3"
-                                            Margin="0,0,12,0">
-                                        <TextBlock Text="←  →"
-                                                   FontSize="12"
-                                                   Foreground="#1A1A1A"
-                                                   FontWeight="Medium"/>
-                                    </Border>
-                                    <TextBlock Grid.Column="1"
-                                               Text="切换歌词"
-                                               FontSize="14"
-                                               Foreground="{StaticResource Fluent.TextPrimary}"
-                                               VerticalAlignment="Center"/>
-                                </Grid>
-
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
