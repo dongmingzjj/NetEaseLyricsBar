@@ -131,7 +131,7 @@ $RECYCLE.BIN/
 .DS_Store
 
 # App specific
-api-server/
+api-server/node_modules/
 DebugView/
 MapleMonoNormal-TTF/
 Fonts/*.ttf
