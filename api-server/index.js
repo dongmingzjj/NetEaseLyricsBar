@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
+const { default: NeteaseCloudMusicApi } = require('NeteaseCloudMusicApi');
 
 const app = express();
 const PORT = 3000;
@@ -8,97 +8,10 @@ const PORT = 3000;
 // 启用 CORS
 app.use(cors());
 
-// 网易云音乐 API 配置
-const NETEASE_API_BASE = 'https://music.163.com';
-
-/**
- * 搜索歌曲
- * GET /api/search?keywords=歌曲名&artist=歌手名
- */
-async function searchSong(keywords, artist = '') {
-    try {
-        // 使用网易云音乐的搜索API（通过代理）
-        const searchUrl = 'https://music.163.com/api/search/get/web';
-        const params = {
-            s: keywords,
-            type: '1', // 单曲
-            offset: 0,
-            limit: 10
-        };
-
-        const response = await axios.get(searchUrl, {
-            params,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Referer': 'https://music.163.com/'
-            }
-        });
-
-        if (response.data.code === 200 && response.data.result?.songs) {
-            const songs = response.data.result.songs;
-
-            // 如果指定了歌手，尝试匹配
-            if (artist) {
-                const matched = songs.find(song =>
-                    song.artists && song.artists.some(a =>
-                        a.name.toLowerCase() === artist.toLowerCase()
-                    )
-                );
-                if (matched) return matched;
-            }
-
-            // 返回第一个结果
-            return songs[0];
-        }
-
-        return null;
-    } catch (error) {
-        console.error('搜索歌曲失败:', error.message);
-        return null;
-    }
-}
-
-/**
- * 获取歌词
- * GET /api/lyric?id=歌曲ID
- */
-async function getLyric(songId) {
-    try {
-        const lyricUrl = 'https://music.163.com/api/song/lyric';
-        const params = {
-            id: songId,
-            lv: 1, // 歌词版本
-            kv: 1, // 翻译版本
-            tv: 1  // 罗马音版本
-        };
-
-        const response = await axios.get(lyricUrl, {
-            params,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Referer': 'https://music.163.com/'
-            }
-        });
-
-        if (response.data.code === 200 && response.data.lrc) {
-            return {
-                lyric: response.data.lrc.lyric || '',
-                nolyric: false
-            };
-        }
-
-        return {
-            lyric: '',
-            nolyric: true
-        };
-    } catch (error) {
-        console.error('获取歌词失败:', error.message);
-        return {
-            lyric: '',
-            nolyric: false
-        };
-    }
-}
+// 初始化网易云音乐 API（如果需要使用代理，可以在这里配置）
+const neteaseApi = new NeteaseCloudMusicApi({
+    cookie: '', // 如果需要登录后访问的功能，可以在这里设置 cookie
+});
 
 /**
  * 一站式搜索并获取歌词
@@ -118,9 +31,12 @@ app.get('/search-and-lyric', async (req, res) => {
         console.log(`[${new Date().toLocaleTimeString()}] 搜索: ${keywords} - ${artist || ''}`);
 
         // 1. 搜索歌曲
-        const song = await searchSong(keywords, artist);
+        const searchResult = await neteaseApi.searchSong({
+            keywords: keywords,
+            limit: 10
+        });
 
-        if (!song) {
+        if (!searchResult || !searchResult.result || !searchResult.result.songs || searchResult.result.songs.length === 0) {
             return res.json({
                 code: 404,
                 message: '未找到歌曲',
@@ -128,12 +44,48 @@ app.get('/search-and-lyric', async (req, res) => {
             });
         }
 
-        console.log(`  → 找到歌曲: ${song.name} - ${song.artists?.map(a => a.name).join('/')}`);
+        const songs = searchResult.result.songs;
 
-        // 2. 获取歌词
-        const lyricData = await getLyric(song.id);
+        // 2. 如果指定了歌手，尝试匹配
+        let selectedSong = songs[0];
 
-        if (lyricData.nolyric || !lyricData.lyric) {
+        if (artist) {
+            const matched = songs.find(song =>
+                song.ar && song.ar.some(a =>
+                    a.name.toLowerCase() === artist.toLowerCase()
+                )
+            );
+            if (matched) selectedSong = matched;
+        }
+
+        console.log(`  → 找到歌曲: ${selectedSong.name} - ${selectedSong.ar?.map(a => a.name).join('/')}`);
+
+        // 3. 获取歌词
+        const lyricResult = await neteaseApi.songLyric({
+            id: selectedSong.id
+        });
+
+        if (!lyricResult || !lyricResult.lrc) {
+            console.log(`  → 无歌词数据`);
+            return res.json({
+                code: 200,
+                message: 'success',
+                data: {
+                    nolyric: false,
+                    lyric: '',
+                    song: {
+                        id: selectedSong.id.toString(),
+                        name: selectedSong.name,
+                        artist: selectedSong.ar?.map(a => a.name).join('/') || ''
+                    }
+                }
+            });
+        }
+
+        const lrcText = lyricResult.lrc.lyric || '';
+
+        // 检查是否纯音乐
+        if (!lrcText || lyricResult.nolyric) {
             console.log(`  → 无歌词（纯音乐）`);
             return res.json({
                 code: 200,
@@ -142,33 +94,34 @@ app.get('/search-and-lyric', async (req, res) => {
                     nolyric: true,
                     lyric: '',
                     song: {
-                        id: song.id.toString(),
-                        name: song.name,
-                        artist: song.artists?.map(a => a.name).join('/') || ''
+                        id: selectedSong.id.toString(),
+                        name: selectedSong.name,
+                        artist: selectedSong.ar?.map(a => a.name).join('/') || ''
                     }
                 }
             });
         }
 
-        console.log(`  → 歌词长度: ${lyricData.lyric.length} 字符`);
+        console.log(`  → 歌词长度: ${lrcText.length} 字符`);
 
-        // 3. 返回结果
+        // 4. 返回结果
         res.json({
             code: 200,
             message: 'success',
             data: {
-                lyric: lyricData.lyric,
+                lyric: lrcText,
                 nolyric: false,
                 song: {
-                    id: song.id.toString(),
-                    name: song.name,
-                    artist: song.artists?.map(a => a.name).join('/') || ''
+                    id: selectedSong.id.toString(),
+                    name: selectedSong.name,
+                    artist: selectedSong.ar?.map(a => a.name).join('/') || ''
                 }
             }
         });
 
     } catch (error) {
         console.error('处理请求失败:', error.message);
+        console.error('错误详情:', error);
         res.status(500).json({
             code: 500,
             message: '服务器错误',
