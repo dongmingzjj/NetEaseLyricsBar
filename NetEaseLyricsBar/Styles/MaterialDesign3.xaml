@@ -1,0 +1,122 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Material Design 3 颜色系统 -->
+    <SolidColorBrush x:Key="MD3.Primary" Color="#6750A4"/>
+    <SolidColorBrush x:Key="MD3.OnPrimary" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MD3.PrimaryContainer" Color="#EADDFF"/>
+    <SolidColorBrush x:Key="MD3.OnPrimaryContainer" Color="#21005D"/>
+
+    <SolidColorBrush x:Key="MD3.Secondary" Color="#625B71"/>
+    <SolidColorBrush x:Key="MD3.OnSecondary" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="MD3.SecondaryContainer" Color="#E8DEF8"/>
+    <SolidColorBrush x:Key="MD3.OnSecondaryContainer" Color="#1D192B"/>
+
+    <SolidColorBrush x:Key="MD3.Surface" Color="#FFFBFE"/>
+    <SolidColorBrush x:Key="MD3.OnSurface" Color="#1C1B1F"/>
+    <SolidColorBrush x:Key="MD3.SurfaceVariant" Color="#E7E0EC"/>
+    <SolidColorBrush x:Key="MD3.OnSurfaceVariant" Color="#49454F"/>
+
+    <SolidColorBrush x:Key="MD3.Outline" Color="#79747E"/>
+    <SolidColorBrush x:Key="MD3.OutlineVariant" Color="#CAC4D0"/>
+
+    <!-- 菜单项样式 - 修复圆角问题 -->
+    <Style x:Key="MD3.MenuItem" TargetType="MenuItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,8,12,8"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="#1C1B1F"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Border"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="8"
+                            Margin="4,2"
+                            Height="{TemplateBinding Height}">
+                        <ContentPresenter Content="{TemplateBinding Header}"
+                                        ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                        TextElement.FontSize="{TemplateBinding FontSize}"
+                                        TextElement.FontWeight="{TemplateBinding FontWeight}"
+                                        Margin="{TemplateBinding Padding}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" TargetName="Border" Value="#E8DEF8"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" TargetName="Border" Value="#D0BCFF"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- 菜单分隔线样式 -->
+    <Style x:Key="MD3.Separator" TargetType="Separator">
+        <Setter Property="Background" Value="#CAC4D0"/>
+        <Setter Property="Margin" Value="8,4"/>
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border Background="{TemplateBinding Background}"
+                            Height="{TemplateBinding Height}"
+                            Margin="{TemplateBinding Margin}"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- 右键菜单样式 -->
+    <Style x:Key="MD3.ContextMenu" TargetType="ContextMenu">
+        <Setter Property="Background" Value="#FFFBFE"/>
+        <Setter Property="Foreground" Value="#1C1B1F"/>
+        <Setter Property="BorderBrush" Value="#CAC4D0"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="12"
+                            Padding="{TemplateBinding Padding}"
+                            Effect="{StaticResource MD3.Shadow}"
+                            ClipToBounds="False">
+                        <ItemsPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" ClipToBounds="False"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource MD3.MenuItem}"/>
+    </Style>
+
+    <!-- 阴影效果 -->
+    <DropShadowEffect x:Key="MD3.Shadow" Color="#1C1B1F"
+                      BlurRadius="16" Opacity="0.15" Direction="270" ShadowDepth="4"/>
+
+    <!-- Maple Font 字体族已移除 - 改为代码中动态加载 -->
+    <!-- <FontFamily x:Key="MapleFont">pack://application:,,,/Fonts/MapleMonoNormal-Regular.ttf#Maple Mono Normal</FontFamily> -->
+
+    <!-- 可用字体选项的字典 - 在运行时动态填充 -->
+    <ResourceDictionary x:Key="FontOptionsDictionary"/>
+
+</ResourceDictionary>

@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetEaseLyricsBar", "NetEaseLyricsBar.csproj", "{97A6EDC6-93BD-DDD6-3297-BB15E4658AD5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97A6EDC6-93BD-DDD6-3297-BB15E4658AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97A6EDC6-93BD-DDD6-3297-BB15E4658AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97A6EDC6-93BD-DDD6-3297-BB15E4658AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97A6EDC6-93BD-DDD6-3297-BB15E4658AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAAF3B73-BF99-4B2A-82AF-9BA3EDC12891}
+	EndGlobalSection
+EndGlobal
